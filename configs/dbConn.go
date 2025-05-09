@@ -31,4 +31,7 @@ func ConnectDB() *mongo.Client {
 	return client
 }
 
-var DB *mongo.Client = ConnectDB()
+func GetCollection(client *mongo.Client) *mongo.Collection {
+	collection := client.Database("tesodev_product").Collection("products")
+	return collection
+}

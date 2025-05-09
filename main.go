@@ -3,7 +3,10 @@ package main
 import (
 	"os"
 	"tesodev/configs"
+	"tesodev/handlers"
 	"tesodev/middleware"
+	"tesodev/repo"
+	"tesodev/services"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -22,7 +25,13 @@ func main() {
 
 	e.Use(middleware.LogMiddleware)
 
-	configs.ConnectDB()
+	dbClient := configs.ConnectDB()
+	collection := configs.GetCollection(dbClient)
 
+	repo := &repo.ProductRepository{Collection: collection}
+	productService := &services.ProductService{Repo: repo}
+	userHandler := &handlers.ProductHandler{Services: productService}
+
+	e.POST("/product", middleware.LogMiddleware(userHandler.CreateProduct))
 	e.Logger.Fatal(e.Start(":3000"))
 }

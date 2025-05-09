@@ -21,6 +21,10 @@ func LogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			"client_id": c.RealIP(),
 		}
 
+		if err != nil {
+			logFields["error"] = err.Error()
+		}
+
 		switch {
 		case c.Response().Status >= 500:
 			logrus.WithFields(logFields).Error("handled request with an error")
