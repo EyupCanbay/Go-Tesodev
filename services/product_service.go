@@ -5,6 +5,7 @@ import (
 	"tesodev/dto"
 	"tesodev/models"
 	"tesodev/repo"
+	"time"
 )
 
 type ProductService struct {
@@ -17,6 +18,8 @@ func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*
 		Price:       req.Price,
 		Description: req.Description,
 	}
+	product.Created_at = time.Now()
+	product.Updated_at = time.Now()
 
 	if err := s.Repo.Create(ctx, product); err != nil {
 		return nil, err
@@ -50,9 +53,21 @@ func (s *ProductService) Update(ctx context.Context, id string, req *dto.Service
 		Description: req.Description,
 	}
 
+	product.Updated_at = time.Now()
+
 	err := s.Repo.Update(ctx, id, product)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s *ProductService) Delete(ctx context.Context, id string) error {
+
+	err := s.Repo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

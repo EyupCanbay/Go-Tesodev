@@ -58,3 +58,15 @@ func (r *ProductRepository) Update(ctx context.Context, id string, updateProduct
 
 	return nil
 }
+
+func (r *ProductRepository) Delete(ctx context.Context, id string) error {
+	ObjID, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"_id": ObjID}
+
+	_, err := r.Collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

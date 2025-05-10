@@ -35,6 +35,7 @@ func main() {
 	e.GET("/product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
 	e.GET("/product", middleware.LogMiddleware(productHandler.GetAllProduct))
 	e.PUT("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateProduct))
+	e.DELETE("/product/:product_id", middleware.LogMiddleware(productHandler.DeleteProduct))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }

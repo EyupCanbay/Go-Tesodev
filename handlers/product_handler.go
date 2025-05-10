@@ -83,3 +83,14 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Successfuly update the poduct"})
 
 }
+
+func (h *ProductHandler) DeleteProduct(c echo.Context) error {
+	id := c.Param("product_id")
+
+	err := h.Services.Delete(c.Request().Context(), id)
+	if err != nil {
+		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
+	}
+
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Succesfuly delete the product"})
+}
