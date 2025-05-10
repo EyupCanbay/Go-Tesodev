@@ -1,5 +1,9 @@
 package dto
 
+import (
+	"github.com/labstack/echo/v4"
+)
+
 type ProductRequest struct {
 	Name        string  `json:"name" validate:"required"`
 	Price       float64 `json:"price" validate:"required"`
@@ -12,15 +16,8 @@ type ServiceProduct struct {
 	Description string
 }
 
-type SuccessResponse struct {
-	Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Description string  `json:"description"`
-}
-
-type ErrorResponse struct {
-	StatusCode int    `json:"status"`
-	Message    bool   `json:"message"`
-	Error      string `json:"error"`
+type Response struct {
+	StatusCode int       `json:"stauscode"`
+	Message    bool      `json:"message"`
+	Data       *echo.Map `json:"data"`
 }

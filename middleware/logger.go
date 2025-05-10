@@ -32,7 +32,7 @@ func LogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		case c.Response().Status >= 400:
 			logrus.WithFields(logFields).Warn("handled request with a warn")
 
-		case c.Response().Status >= 300:
+		case c.Response().Status >= 200:
 			logrus.WithFields(logFields).Info("handled request with an info")
 
 		default:
