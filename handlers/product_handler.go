@@ -47,3 +47,12 @@ func (h *ProductHandler) GetAProduct(c echo.Context) error {
 
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": product})
 }
+
+func (h ProductHandler) GetAllProduct(c echo.Context) error {
+	products, err := h.Services.GetAll(c.Request().Context())
+	if err != nil {
+		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
+	}
+
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": products})
+}

@@ -24,10 +24,20 @@ func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*
 
 	return nil, nil
 }
+
 func (s *ProductService) GetSingle(ctx context.Context, id string) (*models.Product, error) {
 	product, err := s.Repo.GetSingle(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	return product, nil
+}
+
+func (s *ProductService) GetAll(ctx context.Context) ([]models.Product, error) {
+	products, err := s.Repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }

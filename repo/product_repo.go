@@ -27,3 +27,25 @@ func (r *ProductRepository) GetSingle(ctx context.Context, id string) (*models.P
 	}
 	return &product, nil
 }
+
+func (r *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error) {
+	var products []models.Product
+
+	result, err := r.Collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close(ctx)
+
+	//is there correct feild
+	for result.Next(ctx) {
+		var singleProduct models.Product
+		if err = result.Decode(&singleProduct); err != nil {
+			return nil, err
+		}
+
+		products = append(products, singleProduct)
+	}
+
+	return products, nil
+}

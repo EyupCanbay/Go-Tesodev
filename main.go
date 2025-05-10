@@ -33,6 +33,7 @@ func main() {
 
 	e.POST("/product", middleware.LogMiddleware(productHandler.CreateProduct))
 	e.GET("product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
+	e.GET("product", middleware.LogMiddleware(productHandler.GetAllProduct))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
