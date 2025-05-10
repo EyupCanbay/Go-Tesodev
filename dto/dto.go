@@ -21,3 +21,13 @@ type Response struct {
 	Message    bool      `json:"message"`
 	Data       *echo.Map `json:"data"`
 }
+
+type ProductSearchParams struct {
+	Name     string
+	Exact    bool
+	PriceMin float64
+	PriceMax float64
+	Sort     string // "asc" or "desc"
+	Limit    int
+	Page     int
+}
