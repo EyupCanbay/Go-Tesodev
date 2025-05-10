@@ -12,17 +12,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	if os.Getenv("APP_ENV") == "development" {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.WarnLevel)
-	}
-}
-
 func main() {
 	e := echo.New()
 
+	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	logrus.SetOutput(os.Stdout)
 	e.Use(middleware.LogMiddleware)
 
 	dbClient := configs.ConnectDB()
@@ -30,8 +29,10 @@ func main() {
 
 	repo := &repo.ProductRepository{Collection: collection}
 	productService := &services.ProductService{Repo: repo}
-	userHandler := &handlers.ProductHandler{Services: productService}
+	productHandler := &handlers.ProductHandler{Services: productService}
 
-	e.POST("/product", middleware.LogMiddleware(userHandler.CreateProduct))
+	e.POST("/product", middleware.LogMiddleware(productHandler.CreateProduct))
+	e.GET("product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
+
 	e.Logger.Fatal(e.Start(":3000"))
 }

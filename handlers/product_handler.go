@@ -16,7 +16,7 @@ func (h *ProductHandler) CreateProduct(c echo.Context) error {
 	var req dto.ProductRequest
 
 	if err := c.Bind(&req); err != nil {
-		dto.ErrorHandling(c, http.StatusBadRequest, err.Error())
+		dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
 	}
 
 	serviceProduct := &dto.ServiceProduct{
@@ -25,10 +25,25 @@ func (h *ProductHandler) CreateProduct(c echo.Context) error {
 		Description: req.Description,
 	}
 
-	responseProduct, err := h.Services.Create(c.Request().Context(), serviceProduct)
+	_, err := h.Services.Create(c.Request().Context(), serviceProduct)
 	if err != nil {
-		dto.ErrorHandling(c, http.StatusInternalServerError, err.Error())
+		dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, responseProduct)
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "creted"})
+}
+
+func (h *ProductHandler) GetAProduct(c echo.Context) error {
+	id := c.Param("product_id")
+
+	if id == "" {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Id paramater must be feild"})
+	}
+
+	product, err := h.Services.GetSingle(c.Request().Context(), id)
+	if err != nil {
+		return dto.ErrorHandling(c, http.StatusNotFound, &echo.Map{"data": err.Error()})
+	}
+
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": product})
 }

@@ -11,7 +11,7 @@ type ProductService struct {
 	Repo *repo.ProductRepository
 }
 
-func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*dto.SuccessResponse, error) {
+func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*models.Product, error) {
 	product := &models.Product{
 		Name:        req.Name,
 		Price:       req.Price,
@@ -22,10 +22,12 @@ func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*
 		return nil, err
 	}
 
-	return &dto.SuccessResponse{
-		Id:          product.Id.Hex(),
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-	}, nil
+	return nil, nil
+}
+func (s *ProductService) GetSingle(ctx context.Context, id string) (*models.Product, error) {
+	product, err := s.Repo.GetSingle(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
 }
