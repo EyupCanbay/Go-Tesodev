@@ -6,6 +6,7 @@ import (
 	"tesodev/services"
 
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ProductHandler struct {
@@ -86,11 +87,30 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 
 func (h *ProductHandler) DeleteProduct(c echo.Context) error {
 	id := c.Param("product_id")
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Invlid objectId"})
+	}
 
-	err := h.Services.Delete(c.Request().Context(), id)
+	err = h.Services.Delete(c.Request().Context(), id)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Succesfuly delete the product"})
+}
+
+func (h *ProductHandler) UpdateSingleFeild(c echo.Context) error {
+	id := c.Param("product_id")
+	var req dto.ProductRequest
+
+	if err := c.Bind(&req); err != nil {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
+	}
+
+	if err := h.Services.Patch(c.Request().Context(), id, &req); err != nil {
+		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
+	}
+
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Succesfuly update the product"})
 }

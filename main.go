@@ -36,6 +36,7 @@ func main() {
 	e.GET("/product", middleware.LogMiddleware(productHandler.GetAllProduct))
 	e.PUT("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateProduct))
 	e.DELETE("/product/:product_id", middleware.LogMiddleware(productHandler.DeleteProduct))
+	e.PATCH("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateSingleFeild))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }

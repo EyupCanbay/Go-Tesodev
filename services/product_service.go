@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"errors"
 	"tesodev/dto"
 	"tesodev/models"
 	"tesodev/repo"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type ProductService struct {
@@ -70,4 +73,28 @@ func (s *ProductService) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (s *ProductService) Patch(ctx context.Context, id string, req *dto.ProductRequest) error {
+
+	if req.Price < 0 {
+		return errors.New("Price do not  be negatife number")
+	}
+
+	updateProduct := bson.M{}
+	if req.Name != "" {
+		updateProduct["name"] = req.Name
+	}
+	if req.Price > 0 {
+		updateProduct["price"] = req.Price
+	}
+	if req.Description != "" {
+		updateProduct["description"] = req.Description
+	}
+
+	if len(updateProduct) == 0 {
+		return errors.New("No valid fields to updates")
+	}
+
+	return s.Repo.Patch(ctx, id, updateProduct)
 }

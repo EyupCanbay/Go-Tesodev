@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"tesodev/models"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -69,4 +70,20 @@ func (r *ProductRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (r *ProductRepository) Patch(ctx context.Context, id string, updatePrduct bson.M) error {
+	ObjId, _ := primitive.ObjectIDFromHex(id)
+	updatePrduct["updated_at"] = time.Now()
+
+	filter := bson.M{"_id": ObjId}
+	updateData := bson.M{"$set": updatePrduct}
+
+	_, err := r.Collection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
