@@ -48,11 +48,38 @@ func (h *ProductHandler) GetAProduct(c echo.Context) error {
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": product})
 }
 
-func (h ProductHandler) GetAllProduct(c echo.Context) error {
+func (h *ProductHandler) GetAllProduct(c echo.Context) error {
 	products, err := h.Services.GetAll(c.Request().Context())
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": products})
+}
+
+func (h *ProductHandler) UpdateProduct(c echo.Context) error {
+	id := c.Param("product_id")
+
+	var req dto.ProductRequest
+	if err := c.Bind(&req); err != nil {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
+	}
+
+	if req.Price < 0 {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "sould be positife price"})
+	}
+
+	serviceProduct := &dto.ServiceProduct{
+		Name:        req.Name,
+		Price:       req.Price,
+		Description: req.Description,
+	}
+
+	err := h.Services.Update(c.Request().Context(), id, serviceProduct)
+	if err != nil {
+		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
+	}
+
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Successfuly update the poduct"})
+
 }

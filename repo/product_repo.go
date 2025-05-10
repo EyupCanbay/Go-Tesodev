@@ -37,7 +37,6 @@ func (r *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error
 	}
 	defer result.Close(ctx)
 
-	//is there correct feild
 	for result.Next(ctx) {
 		var singleProduct models.Product
 		if err = result.Decode(&singleProduct); err != nil {
@@ -48,4 +47,14 @@ func (r *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error
 	}
 
 	return products, nil
+}
+
+func (r *ProductRepository) Update(ctx context.Context, id string, updateProduct *models.Product) error {
+	ObjID, _ := primitive.ObjectIDFromHex(id)
+	_, err := r.Collection.UpdateOne(ctx, bson.M{"_id": ObjID}, bson.M{"$set": updateProduct})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

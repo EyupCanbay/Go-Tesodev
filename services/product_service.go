@@ -41,3 +41,18 @@ func (s *ProductService) GetAll(ctx context.Context) ([]models.Product, error) {
 
 	return products, nil
 }
+
+func (s *ProductService) Update(ctx context.Context, id string, req *dto.ServiceProduct) error {
+
+	product := &models.Product{
+		Name:        req.Name,
+		Price:       req.Price,
+		Description: req.Description,
+	}
+
+	err := s.Repo.Update(ctx, id, product)
+	if err != nil {
+		return err
+	}
+	return nil
+}

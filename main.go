@@ -32,8 +32,9 @@ func main() {
 	productHandler := &handlers.ProductHandler{Services: productService}
 
 	e.POST("/product", middleware.LogMiddleware(productHandler.CreateProduct))
-	e.GET("product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
-	e.GET("product", middleware.LogMiddleware(productHandler.GetAllProduct))
+	e.GET("/product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
+	e.GET("/product", middleware.LogMiddleware(productHandler.GetAllProduct))
+	e.PUT("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateProduct))
 
 	e.Logger.Fatal(e.Start(":3000"))
 }
