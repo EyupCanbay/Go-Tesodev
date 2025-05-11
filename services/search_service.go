@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"tesodev/dto"
 	"tesodev/models"
 
@@ -24,11 +25,7 @@ func (s *ProductService) SearchProducts(ctx context.Context, params dto.ProductS
 	}
 
 	if params.Name != "" {
-		if params.Exact {
-			filter["name"] = params.Name
-		} else {
-			filter["name"] = bson.M{"$regex": params.Name, "$options": "i"}
-		}
+		filter["name"] = params.Name
 	}
 
 	skip := (params.Page - 1) * params.Limit
@@ -42,5 +39,16 @@ func (s *ProductService) SearchProducts(ctx context.Context, params dto.ProductS
 		findOptions.SetSort(bson.D{{Key: "price", Value: -1}})
 	}
 
-	return s.Repo.FindWithFilter(ctx, filter, findOptions)
+	fmt.Println("filter", filter)
+	fmt.Println("find", findOptions)
+	products, _ := s.Repo.SearchProducts(ctx, filter, findOptions)
+	fmt.Println(products)
+	buffer := len(products)
+	if buffer == 0 {
+
+		filter["name"] = bson.M{"$regex": params.Name, "$options": "i"}
+
+		return s.Repo.SearchProducts(ctx, filter, findOptions)
+	}
+	return products, nil
 }

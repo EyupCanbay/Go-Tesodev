@@ -5,6 +5,7 @@ import (
 	"tesodev/configs"
 	"tesodev/handlers"
 	"tesodev/middleware"
+	"tesodev/models"
 	"tesodev/repo"
 	"tesodev/services"
 
@@ -22,10 +23,12 @@ func main() {
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
 	logrus.SetOutput(os.Stdout)
+
 	e.Use(middleware.LogMiddleware)
 
 	dbClient := configs.ConnectDB()
 	collection := configs.GetCollection(dbClient)
+	models.CreateIndex(collection)
 
 	repo := &repo.ProductRepository{Collection: collection}
 	productService := &services.ProductService{Repo: repo}

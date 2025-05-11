@@ -2,12 +2,15 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"tesodev/models"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r *ProductRepository) FindWithFilter(ctx context.Context, filter interface{}, opts *options.FindOptions) ([]models.Product, error) {
+func (r *ProductRepository) SearchProducts(ctx context.Context, filter interface{}, opts *options.FindOptions) ([]models.Product, error) {
+	fmt.Println(opts)
+	fmt.Println(filter)
 	cursor, err := r.Collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err

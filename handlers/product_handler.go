@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"tesodev/dto"
 	"tesodev/services"
@@ -17,7 +18,16 @@ func (h *ProductHandler) CreateProduct(c echo.Context) error {
 	var req dto.ProductRequest
 
 	if err := c.Bind(&req); err != nil {
-		dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
+	}
+
+	if req.Name == "" || req.Description == "" {
+		fmt.Println(req.Description, req.Name)
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "must be all feild required"})
+	}
+
+	if req.Price < 0 {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "sould be positife price"})
 	}
 
 	serviceProduct := &dto.ServiceProduct{
@@ -66,6 +76,9 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
 	}
 
+	if req.Description == "" || req.Name == "" {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "must be all feild required"})
+	}
 	if req.Price < 0 {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "sould be positife price"})
 	}
