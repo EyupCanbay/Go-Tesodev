@@ -31,7 +31,7 @@ func ConnectDB() *mongo.Client {
 	return client
 }
 
-func GetCollection(client *mongo.Client) *mongo.Collection {
-	collection := client.Database("tesodev_product").Collection("products")
+func GetCollection(client *mongo.Client, col string) *mongo.Collection {
+	collection := client.Database("tesodev_product").Collection(col)
 	return collection
 }

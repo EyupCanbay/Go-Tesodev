@@ -26,7 +26,7 @@ func main() {
 	e.Use(middleware.LogMiddleware)
 
 	dbClient := configs.ConnectDB()
-	collection := configs.GetCollection(dbClient)
+	collection := configs.GetCollection(dbClient, "products")
 
 	repo := &repo.ProductRepository{Collection: collection}
 	productService := &services.ProductService{Repo: repo}
