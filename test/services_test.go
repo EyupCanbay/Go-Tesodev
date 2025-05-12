@@ -218,7 +218,12 @@ func TestGetProductService(t *testing.T) {
 		Repo: &productRepo,
 	}
 
-	results, err := productService.Get(ctx)
+	opt := services.CreateProductRequest{
+		Limit: 10,
+		Page:  1,
+	}
+
+	results, err := productService.Get(ctx, opt)
 	require.NoError(t, err)
 	require.NotEmpty(t, results)
 

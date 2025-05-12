@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ProductService struct {
@@ -28,6 +29,8 @@ type CreateProductRequest struct {
 	Name        string
 	Price       float64
 	Description string
+	Limit       int
+	Page        int
 }
 
 type CreateProductResponse struct {
@@ -71,8 +74,15 @@ func (s *ProductService) GetOneId(ctx context.Context, id string) (*CreateProduc
 	}, nil
 }
 
-func (s *ProductService) Get(ctx context.Context) ([]CreateProductResponse, error) {
-	products, err := s.Repo.Get(ctx)
+func (s *ProductService) Get(ctx context.Context, params CreateProductRequest) ([]CreateProductResponse, error) {
+
+	skip := (params.Page - 1) * params.Limit
+
+	findOptions := options.Find().
+		SetSkip(int64(skip)).
+		SetLimit(int64(params.Limit))
+
+	products, err := s.Repo.Get(ctx, findOptions)
 	if err != nil {
 		return nil, err
 	}

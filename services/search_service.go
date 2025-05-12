@@ -53,12 +53,15 @@ func (s *ProductService) SearchProducts(ctx context.Context, params CreateProduc
 
 	buffer := len(products)
 	if buffer == 0 && params.Name != "" {
+
 		filter["name"] = bson.M{"$regex": params.Name, "$options": "i"}
 		products, err := s.Repo.SearchProducts(ctx, filter, findOptions)
+
 		if err != nil {
 			return nil, err
 		}
 		result, _ := RevertToSlice(products)
+
 		if len(result) == 0 {
 			return nil, fmt.Errorf("Do not found that the name")
 		}

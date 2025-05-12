@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ProductRepository struct {
@@ -50,10 +51,10 @@ func (r *ProductRepository) GetOneId(ctx context.Context, id string) (*models.Pr
 	return &product, nil
 }
 
-func (r *ProductRepository) Get(ctx context.Context) ([]models.Product, error) {
+func (r *ProductRepository) Get(ctx context.Context, opt *options.FindOptions) ([]models.Product, error) {
 	var products []models.Product
 
-	result, err := r.Collection.Find(ctx, bson.M{})
+	result, err := r.Collection.Find(ctx, bson.M{}, opt)
 	if err != nil {
 		return nil, err
 	}

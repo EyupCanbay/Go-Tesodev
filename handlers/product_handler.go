@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"tesodev/dto"
 	"tesodev/services"
 
@@ -59,7 +60,24 @@ func (h *ProductHandler) GetAProductId(c echo.Context) error {
 }
 
 func (h *ProductHandler) GetProduct(c echo.Context) error {
-	products, err := h.Services.Get(c.Request().Context())
+
+	productService := services.CreateProductRequest{
+		Limit: 10,
+		Page:  1,
+	}
+
+	if p := c.QueryParam("page"); p != "" {
+		if pageInt, err := strconv.Atoi(p); err == nil && pageInt > 0 {
+			productService.Page = pageInt
+		}
+	}
+	if l := c.QueryParam("limit"); l != "" {
+		if limitInt, err := strconv.Atoi(l); err == nil && limitInt > 0 {
+			productService.Limit = limitInt
+		}
+	}
+
+	products, err := h.Services.Get(c.Request().Context(), productService)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
