@@ -2,15 +2,13 @@ package repo
 
 import (
 	"context"
-	"fmt"
 	"tesodev/models"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (r *ProductRepository) SearchProducts(ctx context.Context, filter interface{}, opts *options.FindOptions) ([]models.Product, error) {
-	fmt.Println(opts)
-	fmt.Println(filter)
+
 	cursor, err := r.Collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
@@ -18,8 +16,14 @@ func (r *ProductRepository) SearchProducts(ctx context.Context, filter interface
 	defer cursor.Close(ctx)
 
 	var products []models.Product
-	if err := cursor.All(ctx, &products); err != nil {
-		return nil, err
+	for cursor.Next(ctx) {
+		var singleProduct models.Product
+		if err = cursor.Decode(&singleProduct); err != nil {
+			return nil, err
+		}
+
+		products = append(products, singleProduct)
 	}
+
 	return products, nil
 }

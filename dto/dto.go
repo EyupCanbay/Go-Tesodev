@@ -10,12 +10,6 @@ type ProductRequest struct {
 	Description string  `json:"description" validate:"required"`
 }
 
-type ServiceProduct struct {
-	Name        string
-	Price       float64
-	Description string
-}
-
 type Response struct {
 	StatusCode int       `json:"stauscode"`
 	Message    bool      `json:"message"`

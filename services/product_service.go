@@ -2,20 +2,43 @@ package services
 
 import (
 	"context"
-	"errors"
-	"tesodev/dto"
+	"fmt"
 	"tesodev/models"
 	"tesodev/repo"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ProductService struct {
 	Repo *repo.ProductRepository
 }
 
-func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*models.Product, error) {
+type Product struct {
+	Id          primitive.ObjectID
+	Name        string
+	Price       float64
+	Description string
+	Created_at  time.Time
+	Updated_at  time.Time
+}
+
+type CreateProductRequest struct {
+	Name        string
+	Price       float64
+	Description string
+}
+
+type CreateProductResponse struct {
+	ProductId   primitive.ObjectID
+	Name        string
+	Price       float64
+	Description string
+	Created_at  time.Time
+}
+
+func (s *ProductService) Create(ctx context.Context, req CreateProductRequest) (*CreateProductResponse, error) {
 	product := &models.Product{
 		Name:        req.Name,
 		Price:       req.Price,
@@ -24,45 +47,66 @@ func (s *ProductService) Create(ctx context.Context, req *dto.ServiceProduct) (*
 	product.Created_at = time.Now()
 	product.Updated_at = time.Now()
 
-	if err := s.Repo.Create(ctx, product); err != nil {
-		return nil, err
-	}
-
-	return nil, nil
-}
-
-func (s *ProductService) GetSingle(ctx context.Context, id string) (*models.Product, error) {
-	product, err := s.Repo.GetSingle(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return product, nil
-}
-
-func (s *ProductService) GetAll(ctx context.Context) ([]models.Product, error) {
-	products, err := s.Repo.GetAll(ctx)
+	id, err := s.Repo.Create(ctx, product)
 	if err != nil {
 		return nil, err
 	}
 
-	return products, nil
+	return &CreateProductResponse{
+		ProductId: *id,
+	}, nil
 }
 
-func (s *ProductService) Update(ctx context.Context, id string, req *dto.ServiceProduct) error {
-
-	product := &models.Product{
-		Name:        req.Name,
-		Price:       req.Price,
-		Description: req.Description,
+func (s *ProductService) GetOneId(ctx context.Context, id string) (*CreateProductResponse, error) {
+	product, err := s.Repo.GetOneId(ctx, id)
+	if err != nil || product == nil {
+		return nil, fmt.Errorf("product not found or internal error")
 	}
+	return &CreateProductResponse{
+		ProductId:   product.Id,
+		Name:        product.Name,
+		Price:       product.Price,
+		Description: product.Description,
+		Created_at:  product.Created_at,
+	}, nil
+}
 
-	product.Updated_at = time.Now()
-
-	err := s.Repo.Update(ctx, id, product)
+func (s *ProductService) Get(ctx context.Context) ([]CreateProductResponse, error) {
+	products, err := s.Repo.Get(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	var responses []CreateProductResponse
+	for _, p := range products {
+		responses = append(responses, CreateProductResponse{
+			ProductId:   p.Id,
+			Name:        p.Name,
+			Price:       p.Price,
+			Description: p.Description,
+			Created_at:  p.Created_at,
+		})
+	}
+
+	return responses, nil
+}
+
+func (s *ProductService) Update(ctx context.Context, id string, req CreateProductRequest) (*CreateProductResponse, error) {
+
+	var product = bson.M{}
+
+	product["name"] = req.Name
+	product["price"] = req.Price
+	product["description"] = req.Description
+	product["updated_at"] = time.Now()
+
+	productData, err := s.Repo.Update(ctx, id, product)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateProductResponse{
+		ProductId: productData.Id,
+	}, nil
 }
 
 func (s *ProductService) Delete(ctx context.Context, id string) error {
@@ -75,10 +119,10 @@ func (s *ProductService) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *ProductService) Patch(ctx context.Context, id string, req *dto.ProductRequest) error {
+func (s *ProductService) Patch(ctx context.Context, id string, req *CreateProductRequest) (*CreateProductResponse, error) {
 
 	if req.Price < 0 {
-		return errors.New("Price do not  be negatife number")
+		return nil, fmt.Errorf("Price do not  be negatife number")
 	}
 
 	updateProduct := bson.M{}
@@ -93,8 +137,14 @@ func (s *ProductService) Patch(ctx context.Context, id string, req *dto.ProductR
 	}
 
 	if len(updateProduct) == 0 {
-		return errors.New("No valid fields to updates")
+		return nil, fmt.Errorf("No valid fields to updates")
 	}
 
-	return s.Repo.Patch(ctx, id, updateProduct)
+	product, err := s.Repo.Patch(ctx, id, updateProduct)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateProductResponse{
+		ProductId: product.Id,
+	}, nil
 }

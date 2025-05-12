@@ -7,7 +7,6 @@ import (
 	"tesodev/services"
 
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ProductHandler struct {
@@ -30,28 +29,28 @@ func (h *ProductHandler) CreateProduct(c echo.Context) error {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "sould be positife price"})
 	}
 
-	serviceProduct := &dto.ServiceProduct{
+	product := services.CreateProductRequest{
 		Name:        req.Name,
 		Price:       req.Price,
 		Description: req.Description,
 	}
 
-	_, err := h.Services.Create(c.Request().Context(), serviceProduct)
+	result, err := h.Services.Create(c.Request().Context(), product)
 	if err != nil {
 		dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
-	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "creted"})
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": result.ProductId})
 }
 
-func (h *ProductHandler) GetAProduct(c echo.Context) error {
+func (h *ProductHandler) GetAProductId(c echo.Context) error {
 	id := c.Param("product_id")
 
 	if id == "" {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Id paramater must be feild"})
 	}
 
-	product, err := h.Services.GetSingle(c.Request().Context(), id)
+	product, err := h.Services.GetOneId(c.Request().Context(), id)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusNotFound, &echo.Map{"data": err.Error()})
 	}
@@ -59,8 +58,8 @@ func (h *ProductHandler) GetAProduct(c echo.Context) error {
 	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": product})
 }
 
-func (h *ProductHandler) GetAllProduct(c echo.Context) error {
-	products, err := h.Services.GetAll(c.Request().Context())
+func (h *ProductHandler) GetProduct(c echo.Context) error {
+	products, err := h.Services.Get(c.Request().Context())
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
@@ -71,6 +70,9 @@ func (h *ProductHandler) GetAllProduct(c echo.Context) error {
 func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 	id := c.Param("product_id")
 
+	if id == "" {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Id paramater must be feild"})
+	}
 	var req dto.ProductRequest
 	if err := c.Bind(&req); err != nil {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
@@ -83,29 +85,28 @@ func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "sould be positife price"})
 	}
 
-	serviceProduct := &dto.ServiceProduct{
+	serviceProduct := services.CreateProductRequest{
 		Name:        req.Name,
 		Price:       req.Price,
 		Description: req.Description,
 	}
 
-	err := h.Services.Update(c.Request().Context(), id, serviceProduct)
+	result, err := h.Services.Update(c.Request().Context(), id, serviceProduct)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
-	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Successfuly update the poduct"})
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": result.ProductId})
 
 }
 
 func (h *ProductHandler) DeleteProduct(c echo.Context) error {
 	id := c.Param("product_id")
-	_, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Invlid objectId"})
+	if id == "" {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Id paramater must be feild"})
 	}
 
-	err = h.Services.Delete(c.Request().Context(), id)
+	err := h.Services.Delete(c.Request().Context(), id)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
@@ -115,15 +116,25 @@ func (h *ProductHandler) DeleteProduct(c echo.Context) error {
 
 func (h *ProductHandler) UpdateSingleFeild(c echo.Context) error {
 	id := c.Param("product_id")
+	if id == "" {
+		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": "Id paramater must be feild"})
+	}
 	var req dto.ProductRequest
 
 	if err := c.Bind(&req); err != nil {
 		return dto.ErrorHandling(c, http.StatusBadRequest, &echo.Map{"data": err.Error()})
 	}
 
-	if err := h.Services.Patch(c.Request().Context(), id, &req); err != nil {
+	serviceReq := services.CreateProductRequest{
+		Name:        req.Name,
+		Price:       req.Price,
+		Description: req.Description,
+	}
+
+	result, err := h.Services.Patch(c.Request().Context(), id, &serviceReq)
+	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
 
-	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": "Succesfuly update the product"})
+	return dto.SuccessHandling(c, http.StatusOK, &echo.Map{"data": result.ProductId})
 }

@@ -5,7 +5,6 @@ import (
 	"tesodev/configs"
 	"tesodev/handlers"
 	"tesodev/middleware"
-	"tesodev/models"
 	"tesodev/repo"
 	"tesodev/services"
 
@@ -28,15 +27,14 @@ func main() {
 
 	dbClient := configs.ConnectDB()
 	collection := configs.GetCollection(dbClient)
-	models.CreateIndex(collection)
 
 	repo := &repo.ProductRepository{Collection: collection}
 	productService := &services.ProductService{Repo: repo}
 	productHandler := &handlers.ProductHandler{Services: productService}
 
 	e.POST("/product", middleware.LogMiddleware(productHandler.CreateProduct))
-	e.GET("/product/:product_id", middleware.LogMiddleware(productHandler.GetAProduct))
-	e.GET("/product", middleware.LogMiddleware(productHandler.GetAllProduct))
+	e.GET("/product/:product_id", middleware.LogMiddleware(productHandler.GetAProductId))
+	e.GET("/product", middleware.LogMiddleware(productHandler.GetProduct))
 	e.PUT("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateProduct))
 	e.DELETE("/product/:product_id", middleware.LogMiddleware(productHandler.DeleteProduct))
 	e.PATCH("/product/:product_id", middleware.LogMiddleware(productHandler.UpdateSingleFeild))

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"tesodev/dto"
+	"tesodev/services"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -16,7 +17,6 @@ func (h *ProductHandler) Search(c echo.Context) error {
 
 	params := dto.ProductSearchParams{
 		Name:  c.QueryParam("name"),
-		Exact: c.QueryParam("exact") == "true",
 		Sort:  c.QueryParam("sort"),
 		Page:  1,
 		Limit: 10,
@@ -39,7 +39,16 @@ func (h *ProductHandler) Search(c echo.Context) error {
 		params.PriceMax, _ = strconv.ParseFloat(max, 64)
 	}
 
-	products, err := h.Services.SearchProducts(ctx, params)
+	serviceSearch := services.CreateProductSearchRequest{
+		Name:     params.Name,
+		Sort:     params.Sort,
+		Page:     params.Page,
+		Limit:    params.Limit,
+		PriceMax: params.PriceMax,
+		PriceMin: params.PriceMin,
+	}
+
+	products, err := h.Services.SearchProducts(ctx, serviceSearch)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}
