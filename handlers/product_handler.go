@@ -131,7 +131,7 @@ func (h *ProductHandler) UpdateSingleFeild(c echo.Context) error {
 		Description: req.Description,
 	}
 
-	result, err := h.Services.Patch(c.Request().Context(), id, &serviceReq)
+	result, err := h.Services.Patch(c.Request().Context(), id, serviceReq)
 	if err != nil {
 		return dto.ErrorHandling(c, http.StatusInternalServerError, &echo.Map{"data": err.Error()})
 	}

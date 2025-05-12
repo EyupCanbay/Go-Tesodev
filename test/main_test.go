@@ -23,6 +23,9 @@ func TestMain(m *testing.M) {
 	defer cancel()
 
 	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatalf("Failed load .evn file")
+	}
 
 	connectionString := os.Getenv("DB_URI")
 	fmt.Println("fghgjjhjk")

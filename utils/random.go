@@ -8,10 +8,7 @@ import (
 
 const alphabet = "qwertyuıopğüasdfghjklşizxcvbnmöç"
 
-// for true randomness if could not be init function every time
-//
-//	would generate same number because the function can generates
-//	 true randomness according to starting number so ı give from nanosecond
+// for true randomness
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -21,7 +18,7 @@ func RandomInt(min, max int64) int64 {
 	return min + rand.Int63n(max-min+1)
 }
 
-// RandonStirng generates a random sittring of length n
+// RandonStirng generates a random sittring of length
 func RandomString(n int) string {
 	var sb strings.Builder
 	k := len(alphabet)

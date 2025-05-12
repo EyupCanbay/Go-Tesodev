@@ -38,6 +38,7 @@ func (r *ProductRepository) Create(ctx context.Context, product *models.Product)
 
 func (r *ProductRepository) GetOneId(ctx context.Context, id string) (*models.Product, error) {
 	ObcID, err := primitive.ObjectIDFromHex(id)
+	fmt.Println(ObcID, id)
 	if err != nil {
 		return nil, err
 	}

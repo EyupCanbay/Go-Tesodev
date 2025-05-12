@@ -119,7 +119,7 @@ func (s *ProductService) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *ProductService) Patch(ctx context.Context, id string, req *CreateProductRequest) (*CreateProductResponse, error) {
+func (s *ProductService) Patch(ctx context.Context, id string, req CreateProductRequest) (*CreateProductResponse, error) {
 
 	if req.Price < 0 {
 		return nil, fmt.Errorf("Price do not  be negatife number")
