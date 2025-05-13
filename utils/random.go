@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const alphabet = "qwertyuıopğüasdfghjklşizxcvbnmöç"
+const alphabet = "qwertyuiopasdfghjklzxcvbnm"
 
 // for true randomness
 func init() {

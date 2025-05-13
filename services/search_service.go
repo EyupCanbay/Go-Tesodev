@@ -65,6 +65,7 @@ func (s *ProductService) SearchProducts(ctx context.Context, params CreateProduc
 		if len(result) == 0 {
 			return nil, fmt.Errorf("Do not found that the name")
 		}
+		return result, nil
 	}
 	return RevertToSlice(products)
 }
@@ -79,6 +80,12 @@ func RevertToSlice(products []models.Product) ([]CreateProductResponse, error) {
 			Price:       p.Price,
 			Created_at:  p.Created_at,
 		})
+	}
+
+	fmt.Println(len(result) == 0)
+	fmt.Println(len(result))
+	if len(result) == 0 {
+		return nil, fmt.Errorf("do not found")
 	}
 	return result, nil
 }
