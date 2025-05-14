@@ -81,9 +81,6 @@ func RevertToSlice(products []models.Product) ([]CreateProductResponse, error) {
 			Created_at:  p.Created_at,
 		})
 	}
-
-	fmt.Println(len(result) == 0)
-	fmt.Println(len(result))
 	if len(result) == 0 {
 		return nil, fmt.Errorf("do not found")
 	}

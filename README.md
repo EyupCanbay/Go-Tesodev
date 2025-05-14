@@ -44,6 +44,22 @@ A RESTful Product API built with Go and the Echo framework, showcasing standard 
 
 ---
 ## Usage
+Clone the project:
+```bash
+git clone https://github.com/EyupCanbay/Go-Tesodev.git
+cd Go-Tesodev
+```
+Below is an example of how your .env file:
+```bash
+DB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net
+DATABASE=DatabaseName
+DB_COLLECTION=CollectionName
+```
+Run the following command to install the necessary dependencies and start the project:
+```bash
+go mod tidy
+go run main.go
+```
 
 ### Example Request Body For 'POST /products'
 ```bash

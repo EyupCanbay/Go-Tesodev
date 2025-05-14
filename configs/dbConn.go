@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,6 +33,6 @@ func ConnectDB() *mongo.Client {
 }
 
 func GetCollection(client *mongo.Client, col string) *mongo.Collection {
-	collection := client.Database("tesodev_product").Collection(col)
+	collection := client.Database(os.Getenv("DATABASE")).Collection(col)
 	return collection
 }
